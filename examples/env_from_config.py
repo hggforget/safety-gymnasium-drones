@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 
-import safety_gymnasium
+import safety_gymnasium_drones
 
 
 if __name__ == '__main__':
@@ -39,8 +39,8 @@ if __name__ == '__main__':
     }
 
     # environment from the config
-    env = safety_gymnasium.make('SafetyPointGoalBase-v0', config=config)
-    env = safety_gymnasium.wrappers.SafetyGymnasium2Gymnasium(env)
+    env = safety_gymnasium_drones.make('SafetyPointGoalBase-v0', config=config)
+    env = safety_gymnasium_drones.wrappers.SafetyGymnasium2Gymnasium(env)
 
     s, i = env.reset(seed=42)
 

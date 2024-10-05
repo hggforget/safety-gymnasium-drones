@@ -19,7 +19,7 @@ import os
 
 from gymnasium.utils.save_video import save_video
 
-import safety_gymnasium
+import safety_gymnasium_drones
 
 
 DIR = os.path.join(os.path.dirname(__file__), 'cached_test_vision_video')
@@ -27,7 +27,7 @@ DIR = os.path.join(os.path.dirname(__file__), 'cached_test_vision_video')
 
 def run_random(env_name):
     """Random run."""
-    env = safety_gymnasium.make(env_name)
+    env = safety_gymnasium_drones.make(env_name)
     obs, info = env.reset()  # pylint: disable=unused-variable
     # Use below to specify seed.
     # obs, _ = env.reset(seed=0)

@@ -16,12 +16,12 @@
 
 import argparse
 
-import safety_gymnasium
+import safety_gymnasium_drones
 
 
 def run_random(env_name):
     """Random run."""
-    env = safety_gymnasium.make(env_name, render_mode='human')
+    env = safety_gymnasium_drones.make(env_name, render_mode='human')
     obs, _ = env.reset()
     # Use below to specify seed.
     # obs, _ = env.reset(seed=0)

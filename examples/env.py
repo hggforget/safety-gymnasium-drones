@@ -1,7 +1,8 @@
 # Copyright 2022-2023 OmniSafe Team. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compliance with
+# pip uninstall numpythe License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
@@ -16,13 +17,13 @@
 
 import argparse
 from gymnasium.utils.save_video import save_video
-import safety_gymnasium
+import safety_gymnasium_drones
 import numpy as np
 
 
 def run_random(env_name):
     """Random run."""
-    env = safety_gymnasium.make(env_name, render_mode='human')
+    env = safety_gymnasium_drones.make(env_name, render_mode='human')
     obs, info = env.reset()  # pylint: disable=unused-variable
     # Use below to specify seed.
     # obs, _ = env.reset(seed=0)
