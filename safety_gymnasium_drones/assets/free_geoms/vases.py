@@ -21,7 +21,7 @@ import numpy as np
 from safety_gymnasium_drones.assets.color import COLOR
 from safety_gymnasium_drones.assets.group import GROUP
 from safety_gymnasium_drones.bases.base_object import FreeGeom
-from safety_gymnasium_drones.utils.task_utils import get_body_xvel
+from safety_gymnasium_drones.utils.task_utils import get_body_xvelp
 
 
 @dataclass
@@ -61,7 +61,7 @@ class Vases(FreeGeom):  # pylint: disable=too-many-instance-attributes
         """To facilitate get specific config for this object."""
         body = {
             'name': self.name,
-            'pos': np.r_[xy_pos[:2], self.size - self.sink],
+            'pos': np.r_[xy_pos, self.size - self.sink],
             'rot': rot,
             'geoms': [
                 {
@@ -125,7 +125,7 @@ class Vases(FreeGeom):  # pylint: disable=too-many-instance-attributes
             for i in range(self.num):
                 name = f'vase{i}'
                 vel = np.sqrt(
-                    np.sum(np.square(get_body_xvel(self.engine.model, self.engine.data, name)[0])),
+                    np.sum(np.square(get_body_xvelp(self.engine.model, self.engine.data, name))),
                 )
                 if vel >= self.velocity_threshold:
                     cost['cost_vases_velocity'] += vel * self.velocity_cost

@@ -199,12 +199,12 @@ class BaseTask(Underlying):  # pylint: disable=too-many-instance-attributes,too-
     def dist_goal(self) -> float:
         """Return the distance from the agent to the goal XY position."""
         assert hasattr(self, 'goal'), 'Please make sure you have added goal into env.'
-        return self.agent.dist_xyz(self.goal.pos)  # pylint: disable=no-member
+        return self.agent.dist(self.goal.pos)  # pylint: disable=no-member
 
     def dist_staged_goal(self) -> float:
         """Return the distance from the agent to the goal XY position."""
         assert hasattr(self, 'staged_goal'), 'Please make sure you have added goal into env.'
-        return self.agent.dist_xyz(self.staged_goal.pos)  # pylint: disable=no-member
+        return self.agent.dist(self.staged_goal.pos)  # pylint: disable=no-member
 
     def calculate_cost(self) -> dict:
         """Determine costs depending on the agent and obstacles."""
@@ -507,8 +507,6 @@ class BaseTask(Underlying):  # pylint: disable=too-many-instance-attributes,too-
         obs = np.zeros(self.lidar_conf.num_bins)
         for pos in positions:
             pos = np.asarray(pos)
-            # if pos.shape == (3,):
-            #     pos = pos[:2]  # Truncate Z coordinates
             # pylint: disable-next=invalid-name
             z = complex(*self._ego_xy(pos))  # X, Y as real, imaginary components
             dist = np.abs(z)
@@ -570,10 +568,8 @@ class BaseTask(Underlying):  # pylint: disable=too-many-instance-attributes,too-
 
     def _ego_xy(self, pos: np.ndarray) -> np.ndarray:
         """Return the egocentric XY vector to a position from the agent."""
-        # assert pos.shape == (2,), f'Bad pos {pos}'
         agent_3vec = self.agent.pos
         agent_mat = self.agent.mat
-        # pos_3vec = np.concatenate([pos, [0]])  # Add a zero z-coordinate
         pos_3vec = pos  # Add a zero z-coordinate
         world_3vec = pos_3vec - agent_3vec
         return np.matmul(world_3vec, agent_mat)[:2]  # only take XY coordinates
@@ -603,6 +599,6 @@ class BaseTask(Underlying):  # pylint: disable=too-many-instance-attributes,too-
     def goal_achieved(self) -> bool:
         """Check if task specific goal is achieved."""
 
-    @abc.abstractmethod
     def is_out_of_bounds(self):
         """Determine whether agent is out of bounds."""
+        return False

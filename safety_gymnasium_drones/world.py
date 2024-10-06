@@ -29,7 +29,7 @@ import yaml
 
 import safety_gymnasium_drones
 from safety_gymnasium_drones.utils.common_utils import build_xml_from_dict, convert, rot2quat
-from safety_gymnasium_drones.utils.task_utils import get_body_xvel
+from safety_gymnasium_drones.utils.task_utils import get_body_xvelp, get_body_xvelr
 
 
 # Default location to look for xmls folder:
@@ -58,7 +58,7 @@ class World:  # pylint: disable=too-many-instance-attributes
     # Default configuration (this should not be nested since it gets copied)
     # *NOTE:* Changes to this configuration should also be reflected in `Builder` configuration
     DEFAULT: ClassVar[dict[str, Any]] = {
-        'agent_base': 'assets/xmls/car.xml',  # Which agent XML to use as the base
+        'agent_base': 'assets/xmls/quadrotor.xml',  # Which agent XML to use as the base
         'agent_xy': np.zeros(2),  # agent XY location
         'agent_rot': 0,  # agent rotation about Z axis
         'floor_size': [3.5, 3.5, 0.1],  # Used for displaying the floor
@@ -139,7 +139,7 @@ class World:  # pylint: disable=too-many-instance-attributes
         # Move agent position to starting position
         worldbody['body']['@pos'] = convert(
             # pylint: disable-next=no-member
-            np.r_[self.agent_xy[:2], self._agent.z_height],
+            np.r_[self.agent_xy, self._agent.z_height],
         )
         worldbody['body']['@quat'] = convert(rot2quat(self.agent_rot))  # pylint: disable=no-member
 
@@ -445,10 +445,10 @@ class World:  # pylint: disable=too-many-instance-attributes
 
     def body_vel(self, name):
         """Get the velocity of a named body in the simulator world reference frame."""
-        return get_body_xvel(self.model, self.data, name)[0].copy()
+        return get_body_xvelp(self.model, self.data, name).copy()
     def body_angular_vel(self, name):
         """Get the angular velocity of a named body in the simulator world reference frame."""
-        return get_body_xvel(self.model, self.data, name)[1].copy()
+        return get_body_xvelr(self.model, self.data, name).copy()
 
     def get_state(self):
         """Returns a copy of the simulator state."""

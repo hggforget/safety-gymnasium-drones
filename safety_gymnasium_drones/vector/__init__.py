@@ -58,7 +58,7 @@ def make(
         disable_env_checker: If to run the env checker for the first environment only.
         None will default to the environment spec `disable_env_checker` parameter
         (that is by default False), otherwise will run according to this argument (True=not run, False=run)
-        **kwargs: Keywords arguments applied during `safety_gymnasium_drones.make`
+        **kwargs: Keywords arguments applied during `safety_gymnasium.make`
     """
 
     def create_env(env_num: int) -> callable:

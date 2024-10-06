@@ -21,8 +21,8 @@ import gymnasium
 from safety_gymnasium_drones.wrappers.autoreset import SafeAutoResetWrapper
 from safety_gymnasium_drones.wrappers.env_checker import SafePassiveEnvChecker
 from safety_gymnasium_drones.wrappers.gymnasium_conversion import (
-    Gymnasium2SafetyGymnasiumDrones,
-    SafetyGymnasiumDrones2Gymnasium,
+    Gymnasium2SafetyGymnasium,
+    SafetyGymnasium2Gymnasium,
 )
 from safety_gymnasium_drones.wrappers.normalize import (
     SafeNormalizeCost,
@@ -33,13 +33,12 @@ from safety_gymnasium_drones.wrappers.rescale_action import SafeRescaleAction
 from safety_gymnasium_drones.wrappers.time_limit import SafeTimeLimit
 from safety_gymnasium_drones.wrappers.unsqueeze import SafeUnsqueeze
 
-
 __all__ = [
     'SafeAutoResetWrapper',
     'SafePassiveEnvChecker',
     'SafeTimeLimit',
-    'SafetyGymnasiumDrones2Gymnasium',
-    'Gymnasium2SafetyGymnasiumDrones',
+    'SafetyGymnasium2Gymnasium',
+    'Gymnasium2SafetyGymnasium',
     'with_gymnasium_wrappers',
     'SafeNormalizeObservation',
     'SafeNormalizeCost',
@@ -65,7 +64,7 @@ def with_gymnasium_wrappers(
         ...     gymnasium.wrappers.SomeWrapperN,
         ... )
     """
-    for wrapper in (SafetyGymnasiumDrones2Gymnasium, *wrappers, Gymnasium2SafetyGymnasiumDrones):
+    for wrapper in (SafetyGymnasium2Gymnasium, *wrappers, Gymnasium2SafetyGymnasium):
         if not callable(wrapper):  # wrapper class or a partial function
             raise TypeError(f'Wrapper {wrapper} is not callable.')
         env = wrapper(env)

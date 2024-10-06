@@ -16,11 +16,11 @@
 
 from __future__ import annotations
 
-from safety_gymnasium_drones.bases.base_agent import BaseAgent
+from safety_gymnasium_drones.plane.bases.base_agent import BasePlaneAgent
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
 
 
-class Doggo(BaseAgent):
+class Doggo(BasePlaneAgent):
     """A quadrupedal robot with bilateral symmetry.
 
     Each of the four legs has two controls at the hip,

@@ -20,7 +20,7 @@ from gymnasium import logger
 from gymnasium.core import ActType
 
 
-class SafetyGymnasiumDrones2Gymnasium(gymnasium.Wrapper):
+class SafetyGymnasium2Gymnasium(gymnasium.Wrapper):
     """A class that converts a Safety-Gymnasium environment to a Gymnasium environment."""
 
     def step(self, action: ActType):
@@ -34,7 +34,7 @@ class SafetyGymnasiumDrones2Gymnasium(gymnasium.Wrapper):
         return obs, reward, terminated, truncated, info
 
 
-class Gymnasium2SafetyGymnasiumDrones(gymnasium.Wrapper):
+class Gymnasium2SafetyGymnasium(gymnasium.Wrapper):
     """A class that converts a Gymnasium environment to a Safety-Gymnasium environment."""
 
     def step(self, action: ActType):
@@ -59,4 +59,4 @@ def make_gymnasium_environment(env_id, *args, **kwargs):
         raise ValueError(f'Environment {env_id} is not a Gymnasium environment.')
     env_name = env_name[: -len('Gymnasium')]
     safe_env = make(f'{env_name}-{version}', *args, **kwargs)
-    return SafetyGymnasiumDrones2Gymnasium(safe_env)
+    return SafetyGymnasium2Gymnasium(safe_env)

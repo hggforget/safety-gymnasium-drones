@@ -91,23 +91,35 @@ def theta2vec(theta):
     return np.array([np.cos(theta), np.sin(theta), 0.0])
 
 
-def get_body_jac(model, data, name, jacp=None, jacr=None):
+def get_body_jacr(model, data, name, jacr=None):
+    """Get specific body's Jacobian via mujoco."""
+    id = model.body(name).id  # pylint: disable=redefined-builtin, invalid-name
+    if jacr is None:
+        jacr = np.zeros(3 * model.nv).reshape(3, model.nv)
+    jacr_view = jacr
+    mujoco.mj_jacBody(model, data, None, jacr_view, id)  # pylint: disable=no-member
+    return jacr
+
+
+def get_body_xvelr(model, data, name):
+    """Get specific body's Cartesian velocity."""
+    jacr = get_body_jacr(model, data, name).reshape((3, model.nv))
+    return np.dot(jacr, data.qvel)
+
+def get_body_jacp(model, data, name, jacp=None):
     """Get specific body's Jacobian via mujoco."""
     id = model.body(name).id  # pylint: disable=redefined-builtin, invalid-name
     if jacp is None:
         jacp = np.zeros(3 * model.nv).reshape(3, model.nv)
-    if jacr is None:
-        jacr = np.zeros(3 * model.nv).reshape(3, model.nv)
-    jacp_view, jacr_view = jacp, jacr
-    mujoco.mj_jacBody(model, data, jacp_view, jacr_view, id)  # pylint: disable=no-member
-    return jacp, jacr
+    jacp_view = jacp
+    mujoco.mj_jacBody(model, data, jacp_view, None, id)  # pylint: disable=no-member
+    return jacp
 
 
-def get_body_xvel(model, data, name):
+def get_body_xvelp(model, data, name):
     """Get specific body's Cartesian velocity."""
-    jac = get_body_jac(model, data, name)
-    jacp, jacr = jac[0].reshape((3, model.nv)), jac[1].reshape((3, model.nv))
-    return np.dot(jacp, data.qvel), np.dot(jacr, data.qvel)
+    jacp = get_body_jacp(model, data, name).reshape((3, model.nv))
+    return np.dot(jacp, data.qvel)
 
 
 def add_velocity_marker(viewer, pos, vel, cost, velocity_threshold):

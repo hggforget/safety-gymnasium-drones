@@ -28,7 +28,7 @@ from gymnasium import spaces
 
 import safety_gymnasium_drones
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
-from safety_gymnasium_drones.utils.task_utils import get_body_xvel, quat2mat
+from safety_gymnasium_drones.utils.task_utils import get_body_xvelp, get_body_xvelr, quat2mat
 from safety_gymnasium_drones.world import Engine
 from safety_gymnasium_drones.utils.task_utils import quat2euler, mat2quat
 
@@ -357,22 +357,6 @@ class BaseAgent(abc.ABC):  # pylint: disable=too-many-instance-attributes
         if noise:
             self.engine.data.ctrl[:] += noise
 
-    def build_uav_observation_space(self) -> gymnasium.spaces.Dict:
-        obs_space_dict = {}
-        obs_space_dict['rot_mat'] = gymnasium.spaces.Box(
-                -np.inf,
-                np.inf,
-                (9,),
-                dtype=np.float64,
-            )
-        obs_space_dict['relative_pos'] = gymnasium.spaces.Box(
-                -np.inf,
-                np.inf,
-                (3,),
-                dtype=np.float64,
-            )
-        return obs_space_dict
-
     def build_sensor_observation_space(self) -> gymnasium.spaces.Dict:
         """Build observation space for all sensor types.
 
@@ -498,8 +482,8 @@ class BaseAgent(abc.ABC):  # pylint: disable=too-many-instance-attributes
         dim = self.engine.model.sensor_dim[id]
         return self.engine.data.sensordata[adr : adr + dim].copy()
 
-    def dist_xy(self, pos: np.ndarray) -> float:
-        """Return the distance from the agent to an XY position.
+    def dist(self, pos: np.ndarray) -> float:
+        """Return the distance from the agent to an position.
 
         Args:
             pos (np.ndarray): The position to measure the distance to.
@@ -507,52 +491,18 @@ class BaseAgent(abc.ABC):  # pylint: disable=too-many-instance-attributes
         Returns:
             float: The distance from the agent to the position.
         """
-        pos = np.asarray(pos)
-        if pos.shape == (3,):
-            pos = pos[:2]
-        agent_pos = self.pos
-        return np.sqrt(np.sum(np.square(pos - agent_pos[:2])))
-        # return np.sqrt(np.sum(np.square(pos - agent_pos)))
+        raise NotImplementedError
 
-    def dist_xyz(self, pos: np.ndarray) -> float:
-        """Return the distance from the agent to an XYZ position.
-
-        Args:
-            pos (np.ndarray): The position to measure the distance to.
-
-        Returns:
-            float: The distance from the agent to the position.
-        """
-        pos = np.asarray(pos)
-        # if pos.shape == (3,):
-        #     pos = pos[:2]
-        agent_pos = self.pos
-        # return np.sqrt(np.sum(np.square(pos - agent_pos[:2])))
-        return np.sqrt(np.sum(np.square(pos - agent_pos)))
-
-    def world_xy(self, pos: np.ndarray) -> np.ndarray:
-        """Return the world XY vector to a position from the agent.
+    def world(self, pos: np.ndarray) -> np.ndarray:
+        """Return the world vector to a position from the agent.
 
         Args:
             pos (np.ndarray): The position to measure the vector to.
 
         Returns:
-            np.ndarray: The world XY vector to the position.
+            np.ndarray: The world vector to the position.
         """
-        assert pos.shape == (2,)
-        return pos - self.agent.agent_pos()[:2]  # pylint: disable=no-member
-
-    def world_xyz(self, pos: np.ndarray) -> np.ndarray:
-        """Return the world XYZ vector to a position from the agent.
-
-        Args:
-            pos (np.ndarray): The position to measure the vector to.
-
-        Returns:
-            np.ndarray: The world XY vector to the position.
-        """
-        assert pos.shape == (3,)
-        return pos - self.agent.agent_pos()  # pylint: disable=no-member
+        raise NotImplementedError
 
     def keyboard_control_callback(self, key: int, action: int) -> None:
         """Callback for keyboard control.
@@ -613,8 +563,7 @@ class BaseAgent(abc.ABC):  # pylint: disable=too-many-instance-attributes
         Returns:
             np.ndarray: The velocity of the agent.
         """
-        # return get_body_xvel(self.engine.model, self.engine.data, 'agent')[0].copy()
-        return self.engine.data.qvel[:3]
+        return get_body_xvelp(self.engine.model, self.engine.data, 'agent').copy()
 
     @property
     def angular_vel(self) -> np.ndarray:
@@ -623,8 +572,7 @@ class BaseAgent(abc.ABC):  # pylint: disable=too-many-instance-attributes
         Returns:
             np.ndarray: The velocity of the agent.
         """
-        # return get_body_xvel(self.engine.model, self.engine.data, 'agent')[1].copy()
-        return self.engine.data.qvel[3:6]
+        return get_body_xvelr(self.engine.model, self.engine.data, 'agent') .copy()
 
     @property
     def pos(self) -> np.ndarray:

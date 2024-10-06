@@ -18,11 +18,11 @@ from __future__ import annotations
 
 import numpy as np
 
-from safety_gymnasium_drones.bases.base_agent import BaseAgent
+from safety_gymnasium_drones.plane.bases.base_agent import BasePlaneAgent
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
 
 
-class Ant(BaseAgent):
+class Ant(BasePlaneAgent):
     """The ant is a quadrupedal agent composed of nine rigid links,
 
     including a torso and four legs. Each leg consists of two actuators

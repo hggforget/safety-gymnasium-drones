@@ -29,8 +29,7 @@ class Hazards(Geom):  # pylint: disable=too-many-instance-attributes
 
     name: str = 'hazards'
     num: int = 0  # Number of hazards in an environment
-    size: float = 0.1
-    height: float = 1.0  # Height of hazards
+    size: float = 0.2
     placements: list = None  # Placements list for hazards (defaults to full extents)
     locations: list = field(default_factory=list)  # Fixed locations to override placements
     keepout: float = 0.4  # Radius of hazard keepout for placement
@@ -50,12 +49,12 @@ class Hazards(Geom):  # pylint: disable=too-many-instance-attributes
         """To facilitate get specific config for this object."""
         body = {
             'name': self.name,
-            'pos': np.r_[xy_pos, self.height],
+            'pos': np.r_[xy_pos, 2e-2],  # self.hazards_size / 2 + 1e-2],
             'rot': rot,
             'geoms': [
                 {
                     'name': self.name,
-                    'size': [self.size, self.height],  # self.hazards_size / 2],
+                    'size': [self.size, 1e-2],  # self.hazards_size / 2],
                     'type': 'cylinder',
                     'contype': 0,
                     'conaffinity': 0,

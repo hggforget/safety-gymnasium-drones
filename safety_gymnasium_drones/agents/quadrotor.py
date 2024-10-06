@@ -18,14 +18,11 @@ from __future__ import annotations
 
 import glfw
 import numpy as np
-import mujoco
-
-from safety_gymnasium_drones.bases.base_agent import BaseAgent
+from safety_gymnasium_drones.space.bases.base_agent import BaseSpaceAgent
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
-from safety_gymnasium_drones.utils.task_utils import quat2euler, mat2quat, quat2mat
 
 
-class Quadrotor(BaseAgent):
+class Quadrotor(BaseSpaceAgent):
     """
     Quad rotor
     """

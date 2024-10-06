@@ -22,9 +22,7 @@ from typing import Any, ClassVar
 import gymnasium
 import numpy as np
 
-from safety_gymnasium_drones import tasks
 from safety_gymnasium_drones.bases.base_task import BaseTask
-from safety_gymnasium_drones.utils.common_utils import ResamplingError, quat2zalign
 from safety_gymnasium_drones.utils.task_utils import get_task_class_name
 
 
@@ -51,7 +49,7 @@ class RenderConf:
 
 
 # pylint: disable-next=too-many-instance-attributes
-class Builder(gymnasium.Env, gymnasium.utils.EzPickle):
+class BaseBuilder(gymnasium.Env, gymnasium.utils.EzPickle):
     r"""An entry point to organize different environments, while showing unified API for users.
 
     The Builder class constructs the basic control framework of environments, while
@@ -164,114 +162,20 @@ class Builder(gymnasium.Env, gymnasium.utils.EzPickle):
         options: dict | None = None,
     ) -> tuple[np.ndarray, dict]:  # pylint: disable=arguments-differ
         """Reset the environment and return observations."""
-        info = {}
 
-        if not self.task.mechanism_conf.randomize_layout:
-            assert seed is None, 'Cannot set seed if randomize_layout=False'
-            self.set_seed(0)
-        elif seed is not None:
-            self.set_seed(seed)
-
-        self.terminated = False
-        self.truncated = False
-        self.steps = 0  # Count of steps taken in this episode
-
-        self.task.reset()
-        self.task.specific_reset()
-        self.task.update_world(action=None)  # refresh specific settings
-        self.task.agent.reset()
-
-        cost = self._cost()
-        assert cost['cost_sum'] == 0, f'World has starting cost! {cost}'
-        # Reset stateful parts of the environment
-        self.first_reset = False  # Built our first world successfully
-
-        # Return an observation
-        return (self.task.obs(), info)
+        raise NotImplementedError
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, float, bool, bool, dict]:
         """Take a step and return observation, reward, cost, terminated, truncated, info."""
-        assert not self.done, 'Environment must be reset before stepping.'
-        action = np.array(action, copy=False)  # cast to ndarray
-        if action.shape != self.action_space.shape:  # check action dimension
-            raise ValueError('Action dimension mismatch')
 
-        info = {}
-
-        exception = self.task.simulation_forward(action)
-        if exception:
-            self.truncated = True
-
-            reward = self.task.reward_conf.reward_exception
-            info['cost_exception'] = 1.0
-        else:
-            # Reward processing
-            reward = self._reward(action=action)
-
-            # Constraint violations
-            info.update(self._cost())
-
-            cost = info['cost_sum']
-
-            self.task.specific_step()
-
-            # Goal processing
-            if self.task.goal_achieved:
-                info['goal_met'] = True
-                if self.task.mechanism_conf.continue_goal:
-                    # Update the internal layout
-                    # so we can correctly resample (given objects have moved)
-                    self.task.update_layout()
-                    # Try to build a new goal, end if we fail
-                    if self.task.mechanism_conf.terminate_resample_failure:
-                        try:
-                            self.task.update_world(action=action)
-                        except ResamplingError:
-                            # Normal end of episode
-                            self.terminated = True
-                    else:
-                        # Try to make a goal, which could raise a ResamplingError exception
-                        self.task.update_world(action=action)
-                else:
-                    self.terminated = True
-
-        # termination of death processing
-        if not self.task.agent.is_alive():
-            self.terminated = True
-
-        # Timeout
-        self.steps += 1
-        if self.steps >= self.task.num_steps:
-            self.truncated = True  # Maximum number of steps in an episode reached
-
-        if self.render_parameters.mode == 'human':
-            self.render()
-        return self.task.obs(), reward, cost, self.terminated, self.truncated, info
+        raise NotImplementedError
 
     def _reward(self, **kwargs) -> float:
         """Calculate the current rewards.
 
         Call exactly once per step.
         """
-        action = kwargs['action']
-        reward = self.task.calculate_reward(action=action)
-
-        # Intrinsic reward for uprightness
-        if self.task.reward_conf.reward_orientation:
-            zalign = quat2zalign(
-                self.task.data.get_body_xquat(self.task.reward_conf.reward_orientation_body),
-            )
-            reward += self.task.reward_conf.reward_orientation_scale * zalign
-
-        # Clip reward
-        reward_clip = self.task.reward_conf.reward_clip
-        if reward_clip:
-            in_range = -reward_clip < reward < reward_clip
-            if not in_range:
-                reward = np.clip(reward, -reward_clip, reward_clip)
-                print('Warning: reward was outside of range!')
-
-        return reward
+        raise NotImplementedError
 
     def _cost(self) -> dict:
         """Calculate the current costs and return a dict.
@@ -341,3 +245,23 @@ class Builder(gymnasium.Env, gymnasium.utils.EzPickle):
     def render_mode(self) -> str:
         """The render mode."""
         return self.render_parameters.mode
+
+    def __deepcopy__(self, memo) -> Builder:
+        """Make class instance copyable."""
+        other = Builder(
+            self.task_id,
+            self.config,
+            self.render_parameters.mode,
+            self.render_parameters.width,
+            self.render_parameters.height,
+            self.render_parameters.camera_id,
+            self.render_parameters.camera_name,
+        )
+        other._seed = self._seed
+        other.first_reset = self.first_reset
+        other.steps = self.steps
+        other.cost = self.cost
+        other.terminated = self.terminated
+        other.truncated = self.truncated
+        other.task = deepcopy(self.task)  # pylint: disable=attribute-defined-outside-init
+        return other

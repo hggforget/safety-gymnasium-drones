@@ -55,7 +55,7 @@ class Gremlins(Mocap):  # pylint: disable=too-many-instance-attributes
         """To facilitate get objects config for this object"""
         body = {
             'name': self.name,
-            'pos': np.r_[xy_pos, self.size],
+            'pos': np.r_[xy_pos, 0],
             'rot': rot,
             'geoms': [
                 {
@@ -85,7 +85,7 @@ class Gremlins(Mocap):  # pylint: disable=too-many-instance-attributes
         """To facilitate get mocaps config for this object"""
         body = {
             'name': self.name,
-            'pos': np.r_[xy_pos, self.size],
+            'pos': np.r_[xy_pos, 0],
             'rot': rot,
             'geoms': [
                 {
@@ -93,7 +93,7 @@ class Gremlins(Mocap):  # pylint: disable=too-many-instance-attributes
                     'size': np.ones(3) * self.size,
                     'type': 'box',
                     'group': self.group,
-                    'rgba': self.color * np.array([1, 1, 1, self.alpha * 0.1]),
+                    'rgba': self.color * np.array([1, 1, 1, self.alpha * 0.0]),
                 },
             ],
         }

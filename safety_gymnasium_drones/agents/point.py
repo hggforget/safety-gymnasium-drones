@@ -19,11 +19,11 @@ from __future__ import annotations
 import glfw
 import numpy as np
 
-from safety_gymnasium_drones.bases.base_agent import BaseAgent
+from safety_gymnasium_drones.plane.bases.base_agent import BasePlaneAgent
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
 
 
-class Point(BaseAgent):
+class Point(BasePlaneAgent):
     """A simple agent constrained to the 2D-plane.
 
     With one actuator for turning and another for moving forward/backwards.

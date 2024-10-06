@@ -19,11 +19,11 @@ from __future__ import annotations
 import glfw
 import numpy as np
 
-from safety_gymnasium_drones.bases.base_agent import BaseAgent
+from safety_gymnasium_drones.plane.bases.base_agent import BasePlaneAgent
 from safety_gymnasium_drones.utils.random_generator import RandomGenerator
 
 
-class Car(BaseAgent):
+class Car(BasePlaneAgent):
     """Car is a slightly more complex agent.
 
     Which has two independently-driven parallel wheels and a free rolling rear wheel.
