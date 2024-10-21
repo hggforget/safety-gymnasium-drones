@@ -43,7 +43,7 @@ class BaseSpaceAgent(BaseAgent, ABC):  # pylint: disable=too-many-instance-attri
         return self.dist_xyz(pos)
 
     def dist_xy(self, pos: np.ndarray) -> float:
-        """Return the distance from the agent to an XYZ position.
+        """Return the distance from the agent to an XY position.
 
         Args:
             pos (np.ndarray): The position to measure the distance to.
@@ -52,7 +52,9 @@ class BaseSpaceAgent(BaseAgent, ABC):  # pylint: disable=too-many-instance-attri
             float: The distance from the agent to the position.
         """
         pos = np.asarray(pos)
-        agent_pos = self.pos
+        if pos.shape == (3,):
+            pos = pos[:2]
+        agent_pos = self.pos[:2]
         return np.sqrt(np.sum(np.square(pos - agent_pos)))
 
     def dist_xyz(self, pos: np.ndarray) -> float:
