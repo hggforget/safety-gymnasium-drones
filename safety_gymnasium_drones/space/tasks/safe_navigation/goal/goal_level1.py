@@ -29,4 +29,4 @@ class GoalLevel1(GoalLevel0):
 
         self.placements_conf.extents = [-2.0, -2.0, 2.0, 2.0]
 
-        self._add_geoms(Hazards(num=16, keepout=0.18))
+        self._add_geoms(Hazards(num=8, keepout=0.18))

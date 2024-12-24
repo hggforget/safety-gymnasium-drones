@@ -26,4 +26,4 @@ class GoalLevel2(GoalLevel1):
 
         self.placements_conf.extents = [-2, -2, 2, 2]
 
-        self.hazards.num = 20
+        self.hazards.num = 12
