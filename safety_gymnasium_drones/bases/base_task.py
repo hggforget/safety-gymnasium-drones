@@ -598,7 +598,3 @@ class BaseTask(Underlying):  # pylint: disable=too-many-instance-attributes,too-
     @abc.abstractmethod
     def goal_achieved(self) -> bool:
         """Check if task specific goal is achieved."""
-
-    def is_out_of_bounds(self):
-        """Determine whether agent is out of bounds."""
-        return False

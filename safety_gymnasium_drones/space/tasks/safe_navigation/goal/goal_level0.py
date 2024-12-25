@@ -40,21 +40,6 @@ class GoalLevel0(BaseTask):
         self.last_dist_goal = None
         self.last_action = None
 
-    def is_out_of_bounds(self):
-        agent_pos = self.agent.pos
-        bounds = self.placements_conf.extents
-        assert len(bounds) % 2 == 0
-        dims = int(len(bounds) / 2)
-        min_bounds = bounds[:dims]
-        max_bounds = bounds[dims:]
-        if dims == 2:
-            min_bounds.append(0)
-            max_bounds.append(2.0)
-        if all([min_bound - 5.0 <= pos <= max_bound + 5.0 for min_bound, pos, max_bound
-                in zip(min_bounds, agent_pos, max_bounds)]):
-            return False
-        return True
-
     def calc_hover_reward(self):
 
         for contact in self.data.contact[: self.data.ncon]:
