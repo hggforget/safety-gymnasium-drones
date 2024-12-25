@@ -80,8 +80,8 @@ class GoalLevel0(BaseTask):
         self.last_dist_goal = dist_goal
         if self.last_action is None:
             self.last_action = action
-        reward -= self._large_action_penalty * np.sqrt(np.sum(np.square(action))) + \
-                  self._action_smoothness_penalty * np.sqrt(np.sum(np.square(action - self.last_action)))
+        # reward -= self._large_action_penalty * np.sqrt(np.sum(np.square(action))) + \
+        #           self._action_smoothness_penalty * np.sqrt(np.sum(np.square(action - self.last_action)))
         self.last_action = action
 
         if self.goal_achieved:
