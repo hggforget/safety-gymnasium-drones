@@ -261,6 +261,7 @@ class World:  # pylint: disable=too-many-instance-attributes
             <camera name="fixednear" pos="0 -2 2" zaxis="0 -1 1"/>
             <camera name="fixedfar" pos="0 -5 5" zaxis="0 -1 1"/>
             <camera name="fixedfar++" pos="0 -10 10" zaxis="0 -1 1"/>
+            <camera name="bev" pos="0 0 60" zaxis="0 0 1"  fovy="5"/>
             </b>""",
         )
         worldbody['camera'] = cameras['b']['camera']
