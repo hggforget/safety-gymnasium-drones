@@ -34,11 +34,11 @@ class Goal(Goal):  # pylint: disable=too-many-instance-attributes
     locations: list = field(default_factory=list)  # Fixed locations to override placements
     keepout: float = 0.4  # Keepout radius when placing goals
 
-    reward_goal: float = 1.0  # Sparse reward for being inside the goal area
+    reward_goal: float = 4.0  # Sparse reward for being inside the goal area
     # Reward is distance towards goal plus a constant for being within range of goal
     # reward_distance should be positive to encourage moving towards the goal
     # if reward_distance is 0, then the reward function is sparse
-    reward_distance: float = 1.0  # Dense reward multiplied by the distance moved to the goal
+    reward_distance: float = 4.0  # Dense reward multiplied by the distance moved to the goal
 
     color: np.ndarray = COLOR['goal']
     alpha: float = 0.25
