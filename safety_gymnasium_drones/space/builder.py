@@ -129,6 +129,23 @@ class SpaceBuilder(BaseBuilder):
             self.render()
         return self.task.obs(), reward, cost, self.terminated, self.truncated, info
 
+    def _cost(self) -> dict:
+        """Calculate the current costs and return a dict.
+
+        Call exactly once per step.
+        """
+        cost = self.task.calculate_cost()
+
+        # Optionally remove shaping from reward functions.
+        if self.task.cost_conf.constrain_indicator:
+            for k in list(cost.keys()):
+                cost[k] = float(cost[k] > 0.0)  # Indicator function
+        if hasattr(self.task, 'calc_floor_cost'):
+            cost['cost_sum'] += self.task.calc_floor_cost()
+        self.cost = cost
+
+        return cost
+
     def _reward(self, **kwargs) -> float:
         """Calculate the current rewards.
 

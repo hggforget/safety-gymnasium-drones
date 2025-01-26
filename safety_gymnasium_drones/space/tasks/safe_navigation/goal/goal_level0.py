@@ -63,8 +63,6 @@ class GoalLevel0(BaseTask):
         for obstacle in self._obstacles:
             cost.update(obstacle.cal_cost())
 
-        cost['cost_floor_contact'] = self.calc_floor_cost()
-
         if self._is_load_static_geoms and self.static_geoms_contact_cost:
             cost['cost_static_geoms_contact'] = 0.0
             for contact in self.data.contact[: self.data.ncon]:
