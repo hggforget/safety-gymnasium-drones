@@ -37,7 +37,7 @@ class GoalLevel0(BaseTask):
         self._perception_reward = 2e-3
         self._large_action_penalty = 2e-5
         self._action_smoothness_penalty = 2e-5
-        self._floor_contact_cost = 1.0
+        self._floor_contact_cost = 0.1
 
         self.last_dist_goal = None
         self.last_action = None
