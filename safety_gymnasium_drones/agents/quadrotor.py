@@ -77,8 +77,8 @@ class Quadrotor(BaseSpaceAgent):
 
     def is_alive(self):
         """Point runs until timeout."""
-        if self.pos[2] < 0.1 and abs((np.degrees(self.euler)[0] + 360) % 360 - 180) <= 1.0:
-            return False
+        # if self.pos[2] < 0.1 and abs((np.degrees(self.euler)[0] + 360) % 360 - 180) <= 1.0:
+        #     return False
         return True
 
     def reset(self):

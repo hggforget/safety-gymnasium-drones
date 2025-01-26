@@ -14,6 +14,7 @@
 # ==============================================================================
 """Goal level 0."""
 import math
+import mujoco
 
 from safety_gymnasium_drones.space.assets.geoms import Goal
 from safety_gymnasium_drones.bases.base_task import BaseTask
@@ -36,11 +37,12 @@ class GoalLevel0(BaseTask):
         self._perception_reward = 2e-3
         self._large_action_penalty = 2e-5
         self._action_smoothness_penalty = 2e-5
+        self._floor_contact_cost = 1.0
 
         self.last_dist_goal = None
         self.last_action = None
 
-    def calc_hover_reward(self):
+    def calc_floor_cost(self):
 
         for contact in self.data.contact[: self.data.ncon]:
             geom_ids = [contact.geom1, contact.geom2]
@@ -48,15 +50,41 @@ class GoalLevel0(BaseTask):
             if 'floor' in geom_names:
                 geom_names.remove('floor')
                 if any(n in geom_names for n in self.agent.body_info.geom_names):
-                    return 0.0
-        return self._hover_reward
+                    return self._floor_contact_cost
+        return 0.0
+
+    def calculate_cost(self) -> dict:
+        """Determine costs depending on the agent and obstacles."""
+        # pylint: disable-next=no-member
+        mujoco.mj_forward(self.model, self.data)  # Ensure positions and contacts are correct
+        cost = {}
+
+        # Calculate constraint violations
+        for obstacle in self._obstacles:
+            cost.update(obstacle.cal_cost())
+
+        cost['cost_floor_contact'] = self.calc_floor_cost()
+
+        if self._is_load_static_geoms and self.static_geoms_contact_cost:
+            cost['cost_static_geoms_contact'] = 0.0
+            for contact in self.data.contact[: self.data.ncon]:
+                geom_ids = [contact.geom1, contact.geom2]
+                geom_names = sorted([self.model.geom(g).name for g in geom_ids])
+                if any(n in self.static_geoms_names for n in geom_names) and any(
+                        n in self.agent.body_info.geom_names for n in geom_names
+                ):
+                    # pylint: disable-next=no-member
+                    cost['cost_static_geoms_contact'] += self.static_geoms_contact_cost
+
+        # Sum all costs into single total cost
+        cost['cost_sum'] = sum(v for k, v in cost.items() if k.startswith('cost_'))
+        return cost
 
     def calculate_reward(self, **kwargs):
         """Determine reward depending on the agent and tasks."""
         # pylint: disable=no-member
         action = kwargs['action']
         reward = 0.0
-        reward += self.calc_hover_reward()
         reward += self._perception_reward * \
                   math.exp(- math.pow(self.optical_axis_angle[0], 4))
         reward -= self._angular_vel_penalty * np.sqrt(np.sum(np.square(self.agent.angular_vel)))
